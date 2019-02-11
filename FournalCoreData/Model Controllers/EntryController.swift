@@ -11,6 +11,13 @@ import CoreData
 
 class EntryController {
     
+    // MARK: - Properties
+    
+    var entries: [Entry] {
+        return loadFromPersistentStore()
+    }
+    
+    
     // MARK: - Persistent Coordinator
     
     func saveToPersistentStore() {
@@ -32,6 +39,29 @@ class EntryController {
             NSLog("Error fetching from managed object context: \(error)")
             return []
         }
+    }
+    
+    
+    // MARK: - CRUD methods
+    
+    func createEntry(with title: String, bodyText: String) {
+        Entry(title: title, bodyText: bodyText)
+        
+        saveToPersistentStore()
+    }
+    
+    func update(entry: Entry, title: String, bodyText: String) {
+        entry.title = title
+        entry.bodyText = bodyText
+        entry.timestamp = Date()
+        
+        saveToPersistentStore()
+    }
+    
+    func delete(entry: Entry) {
+        CoreDataStack.shared.mainContext.delete(entry)
+        
+        saveToPersistentStore()
     }
     
 }
