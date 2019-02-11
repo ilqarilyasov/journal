@@ -49,7 +49,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="8O4-n8-oWS">
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="I5F-4Q-1FF"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="I5F-4Q-1FF">
+                            <connections>
+                                <action selector="saveBarButtonTapped:" destination="BYZ-38-t0r" id="ivw-iZ-MkO"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="bodyTextTextView" destination="Lbx-7K-1ve" id="cmZ-vh-552"/>
