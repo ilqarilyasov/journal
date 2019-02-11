@@ -63,4 +63,20 @@ class EntryDetailViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+//    override func updateViewConstraints() {
+//        super.updateViewConstraints()
+//        
+//        if traitCollection.preferredContentSizeCategory.isAccessibilityCategory {
+//            let label = UILabel()
+//            label.frame = CGRect(x: 0, y: 0, width: 400, height: 50)
+//            label.font = UIFont.boldSystemFont(ofSize: 16)
+//            label.backgroundColor = .clear
+//            label.textColor = .black
+//            label.numberOfLines = 2
+//            label.text = title
+//            label.adjustsFontSizeToFitWidth = true
+//            navigationItem.titleView = label
+//        }
+//    }
+    
 }

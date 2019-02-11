@@ -30,6 +30,7 @@ class EntryTableViewCell: UITableViewCell {
     @IBOutlet weak var titleTextLabel: UILabel!
     @IBOutlet weak var timestampLabel: UILabel!
     @IBOutlet weak var bodyTextLabel: UILabel!
+    @IBOutlet weak var titleAndTimestampSV: UIStackView!
     
     
     // MARK: - Update views
@@ -41,6 +42,16 @@ class EntryTableViewCell: UITableViewCell {
         titleTextLabel.text = entry.title
         bodyTextLabel.text = entry.bodyText
         timestampLabel.text = formatter.string(from: date)
+    }
+    
+    override func updateConstraints() {
+        super.updateConstraints()
+        
+        if traitCollection.preferredContentSizeCategory.isAccessibilityCategory {
+            titleAndTimestampSV.axis = .vertical
+        } else {
+            titleAndTimestampSV.axis = .horizontal
+        }
     }
 
 }
