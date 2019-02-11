@@ -10,6 +10,11 @@ import UIKit
 
 class EntryDetailViewController: UIViewController {
     
+    // MARK: - Properties
+    
+    var entryController: EntryController?
+    var entry: Entry?
+    
     
     // MARK: - Outlets
     
