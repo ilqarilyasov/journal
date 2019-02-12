@@ -13,9 +13,9 @@ class EntryController {
     
     // MARK: - Properties
     
-    var entries: [Entry] {
-        return loadFromPersistentStore()
-    }
+//    var entries: [Entry] {
+//        return loadFromPersistentStore()
+//    }
     
     
     // MARK: - Persistent Coordinator
@@ -30,17 +30,17 @@ class EntryController {
         }
     }
     
-    func loadFromPersistentStore() -> [Entry] {
-        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest()
-        let moc = CoreDataStack.shared.mainContext
-        
-        do {
-            let entries = try moc.fetch(fetchRequest)
-            return entries
-        } catch {
-            NSLog("Error fetching from managed object context: \(error)")
-            return []
-        }
+//    func loadFromPersistentStore() -> [Entry] {
+//        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest()
+//        let moc = CoreDataStack.shared.mainContext
+//
+//        do {
+//            let entries = try moc.fetch(fetchRequest)
+//            return entries
+//        } catch {
+//            NSLog("Error fetching from managed object context: \(error)")
+//            return []
+//        }
     }
     
     

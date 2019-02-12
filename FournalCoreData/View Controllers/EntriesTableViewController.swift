@@ -7,12 +7,27 @@
 //
 
 import UIKit
+import CoreData
 
-class EntriesTableViewController: UITableViewController {
+class EntriesTableViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
     // MARK: - Properties
     
     let entryController = EntryController()
+    lazy var fetchedResultsController: NSFetchedResultsController<Entry> = {
+        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "timestamp", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        let moc = CoreDataStack.shared.mainContext
+        let frc = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                             managedObjectContext: moc,
+                                             sectionNameKeyPath: "mood", cacheName: nil)
+        frc.delegate = self
+        try! frc.performFetch()
+        
+        return frc
+    }()
     
     
     // MARK: - Lifecycle
@@ -64,5 +79,10 @@ class EntriesTableViewController: UITableViewController {
             destinationVC.entryController = entryController
         }
     }
+    
+    
+    // MARK: - NSFetchedResultsControllerDelegate
+    
+    
 
 }
