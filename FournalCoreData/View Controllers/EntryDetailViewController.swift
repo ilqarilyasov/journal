@@ -42,8 +42,15 @@ class EntryDetailViewController: UIViewController {
             title = entry.title
             titleTextField.text = entry.title
             bodyTextTextView.text = entry.bodyText
+            
+            guard let moodString = entry.mood,
+                let mood = Mood(rawValue: moodString),
+                let moodIndex = Mood.allCases.index(of: mood) else { return }
+            
+            moodSegmentedControl.selectedSegmentIndex = moodIndex
         } else {
             title = "Create Entry"
+            moodSegmentedControl.selectedSegmentIndex = 1
         }
     }
     
@@ -51,14 +58,16 @@ class EntryDetailViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction func saveBarButtonTapped(_ sender: Any) {
-        guard let title = titleTextField.text,
-            !title.isEmpty,
+        guard let title = titleTextField.text, !title.isEmpty,
             let bodyText = bodyTextTextView.text else { return }
         
+        let index = moodSegmentedControl.selectedSegmentIndex
+        let mood = Mood.allCases[index]
+        
         if let entry = entry {
-            entryController?.update(entry: entry, title: title, bodyText: bodyText)
+            entryController?.update(entry: entry, title: title, bodyText: bodyText, mood: mood)
         } else {
-            entryController?.createEntry(with: title, bodyText: bodyText)
+            entryController?.createEntry(with: title, bodyText: bodyText, mood: mood)
         }
         
         navigationController?.popViewController(animated: true)
