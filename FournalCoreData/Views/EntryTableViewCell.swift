@@ -19,11 +19,11 @@ class EntryTableViewCell: UITableViewCell {
     
     // MARK: - Helper
     
-    lazy var formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter
-    }()
+//    lazy var formatter: DateFormatter = {
+//        let formatter = DateFormatter()
+//        formatter.timeStyle = .short
+//        return formatter
+//    }()
     
     // MARK: - Outlets
 
@@ -37,11 +37,11 @@ class EntryTableViewCell: UITableViewCell {
     
     private func updateViews() {
         guard let entry = entry,
-            let date = entry.timestamp else { return }
+            let timestamp = entry.timestamp else { return }
         
         titleTextLabel.text = entry.title
         bodyTextLabel.text = entry.bodyText
-        timestampLabel.text = formatter.string(from: date)
+        timestampLabel.text = timestamp.dateString()
     }
     
     override func updateConstraints() {
@@ -54,4 +54,14 @@ class EntryTableViewCell: UITableViewCell {
         }
     }
 
+}
+
+
+extension Date {
+    func dateString() -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        formatter.dateStyle = .short
+        return formatter.string(from: self)
+    }
 }
