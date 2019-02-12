@@ -21,9 +21,11 @@ class EntryController {
     // MARK: - Persistent Coordinator
     
     func saveToPersistentStore() {
+        let moc = CoreDataStack.shared.mainContext
         do {
-            try CoreDataStack.shared.mainContext.save()
+            try moc.save()
         } catch {
+            moc.reset()
             NSLog("Error saving managed object context: \(error)")
         }
     }
