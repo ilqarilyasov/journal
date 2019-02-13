@@ -10,7 +10,9 @@ import Foundation
 import CoreData
 
 enum Mood: String, CaseIterable, Equatable {
-    case 😞, 😐, 😄
+    case a = "😞"
+    case b = "😐"
+    case c = "😄"
 }
 
 extension Entry {

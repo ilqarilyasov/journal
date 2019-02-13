@@ -16,8 +16,9 @@ class EntriesTableViewController: UITableViewController, NSFetchedResultsControl
     let entryController = EntryController()
     lazy var fetchedResultsController: NSFetchedResultsController<Entry> = {
         let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "timestamp", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
+        let sortMood = NSSortDescriptor(key: "mood", ascending: false)
+        let sortTimestamp = NSSortDescriptor(key: "timestamp", ascending: true)
+        fetchRequest.sortDescriptors = [sortMood, sortTimestamp]
         
         let moc = CoreDataStack.shared.mainContext
         let frc = NSFetchedResultsController(fetchRequest: fetchRequest,
@@ -66,7 +67,19 @@ class EntriesTableViewController: UITableViewController, NSFetchedResultsControl
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return fetchedResultsController.sections?[section].name
+        var title = ""
+        switch section {
+        case 0:
+            title = Mood.a.rawValue
+        case 1:
+            title = Mood.b.rawValue
+        case 2:
+            title = Mood.c.rawValue
+        default:
+            break
+        }
+//        return fetchedResultsController.sections?[section].name
+        return title
     }
     
 
