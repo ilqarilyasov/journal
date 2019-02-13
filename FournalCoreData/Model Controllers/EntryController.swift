@@ -123,4 +123,24 @@ class EntryController {
         }.resume()
     }
     
+    func update(entry: Entry, entryRep: EntryRepresentation) {
+        entry.identifier = entryRep.identifier
+        entry.title = entryRep.title
+        entry.bodyText = entryRep.bodyText
+        entry.timestamp = entryRep.timestamp
+        entry.mood = entryRep.mood.rawValue
+    }
+    
+    func fetchSingleEntryFromPersistentStore(identifier: String) -> Entry? {
+        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "identifier == %@", identifier)
+        do {
+            let entry = try moc.fetch(fetchRequest).first
+            return entry
+        } catch {
+            NSLog("Error fetching single entry from Persistent Store")
+            return nil
+        }
+    }
+    
 }
