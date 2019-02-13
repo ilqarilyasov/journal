@@ -17,6 +17,8 @@ class EntryController {
 //        return loadFromPersistentStore()
 //    }
     
+    private let baseURL = URL(string: "https://journal-coredata-b5a96.firebaseio.com/")!
+    
     
     // MARK: - Persistent Coordinator
     
@@ -47,9 +49,10 @@ class EntryController {
     // MARK: - CRUD methods
     
     func createEntry(with title: String, bodyText: String, mood: Mood) {
-        Entry(title: title, bodyText: bodyText, mood: mood)
+        let entry = Entry(title: title, bodyText: bodyText, mood: mood)
         
         saveToPersistentStore()
+        put(entry: entry)
     }
     
     func update(entry: Entry, title: String, bodyText: String, mood: Mood) {
@@ -59,12 +62,46 @@ class EntryController {
         entry.timestamp = Date()
         
         saveToPersistentStore()
+        put(entry: entry)
     }
     
     func delete(entry: Entry) {
         CoreDataStack.shared.mainContext.delete(entry)
         
         saveToPersistentStore()
+    }
+    
+    
+    // MARK: - Network calls
+    
+    func put(entry: Entry, completion: @escaping (Error?) -> Void = { _ in }) {
+        let identifier = entry.identifier ?? UUID().uuidString
+        
+        let urlPlusID = baseURL.appendingPathComponent(identifier)
+        let urlPlusJSON = urlPlusID.appendingPathExtension("json")
+        
+        var request = URLRequest(url: urlPlusJSON)
+        request.httpMethod = "PUT"
+        
+        do {
+            let encoder = JSONEncoder()
+            let entryJSON = try encoder.encode(entry)
+            request.httpBody = entryJSON
+        } catch {
+            NSLog("Error encoding error: \(error)")
+            completion(error)
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { (_, _, error) in
+            if let error = error {
+                NSLog("Error putting entry tot the server: \(error)")
+                completion(error)
+                return
+            }
+            
+            completion(nil)
+        }.resume()
     }
     
 }
