@@ -18,12 +18,11 @@ class EntryController {
 //    }
     
     private let baseURL = URL(string: "https://journal-coredata-b5a96.firebaseio.com/")!
-    
+    let moc = CoreDataStack.shared.mainContext
     
     // MARK: - Persistent Coordinator
     
     func saveToPersistentStore() {
-        let moc = CoreDataStack.shared.mainContext
         do {
             try moc.save()
         } catch {
@@ -52,7 +51,7 @@ class EntryController {
         let entry = Entry(title: title, bodyText: bodyText, mood: mood)
         
         saveToPersistentStore()
-        put(entry: entry)
+        putToServer(entry: entry)
     }
     
     func update(entry: Entry, title: String, bodyText: String, mood: Mood) {
@@ -62,19 +61,20 @@ class EntryController {
         entry.timestamp = Date()
         
         saveToPersistentStore()
-        put(entry: entry)
+        putToServer(entry: entry)
     }
     
     func delete(entry: Entry) {
-        CoreDataStack.shared.mainContext.delete(entry)
+        moc.delete(entry)
         
         saveToPersistentStore()
+        deleteFromServer(entry: entry)
     }
     
     
     // MARK: - Network calls
     
-    func put(entry: Entry, completion: @escaping (Error?) -> Void = { _ in }) {
+    func putToServer(entry: Entry, completion: @escaping (Error?) -> Void = { _ in }) {
         let identifier = entry.identifier ?? UUID().uuidString
         
         let urlPlusID = baseURL.appendingPathComponent(identifier)
@@ -100,6 +100,25 @@ class EntryController {
                 return
             }
             
+            completion(nil)
+        }.resume()
+    }
+    
+    func deleteFromServer(entry: Entry, completion: @escaping (Error?) -> Void = { _ in }) {
+        guard let identifier = entry.identifier else { return }
+        
+        let urlPlusID = baseURL.appendingPathComponent(identifier)
+        let urlPlusJSON = urlPlusID.appendingPathExtension("json")
+        
+        var request = URLRequest(url: urlPlusJSON)
+        request.httpMethod = "DELETE"
+        
+        URLSession.shared.dataTask(with: request) { (_, _, error) in
+            if let error = error {
+                NSLog("Error deleting entry from server: \(error)")
+                completion(error)
+                return
+            }
             completion(nil)
         }.resume()
     }
