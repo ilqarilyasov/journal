@@ -41,7 +41,7 @@ class EntryController {
 //            NSLog("Error fetching from managed object context: \(error)")
 //            return []
 //        }
-    }
+//    }
     
     
     // MARK: - CRUD methods
