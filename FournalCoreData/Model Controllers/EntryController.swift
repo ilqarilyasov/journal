@@ -11,6 +11,10 @@ import CoreData
 
 class EntryController {
     
+    init() {
+        fetchEntriesFromServer()
+    }
+    
     // MARK: - Properties
     
 //    var entries: [Entry] {
@@ -67,8 +71,8 @@ class EntryController {
     func delete(entry: Entry) {
         moc.delete(entry)
         
-        saveToPersistentStore()
         deleteFromServer(entry: entry)
+        saveToPersistentStore()
     }
     
     
@@ -141,6 +145,45 @@ class EntryController {
             NSLog("Error fetching single entry from Persistent Store")
             return nil
         }
+    }
+    
+    func fetchEntriesFromServer(completion: @escaping (Error?) -> Void = { _ in }) {
+        let urlPlusJSON = baseURL.appendingPathExtension("json")
+        
+        URLSession.shared.dataTask(with: urlPlusJSON) { (data, _, error) in
+            if let error = error {
+                NSLog("Error fetching entries from server: \(error)")
+                completion(error)
+                return
+            }
+            
+            guard let data = data else  {
+                NSLog("No data returned from server")
+                completion(NSError())
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let entryRepDict = try decoder.decode([String: EntryRepresentation].self, from: data)
+                let entryRepresentations = entryRepDict.map{ $0.value }
+                
+                for er in entryRepresentations {
+                    let entry = self.fetchSingleEntryFromPersistentStore(identifier: er.identifier)
+                    
+                    if let entry = entry, entry != er {
+                        self.update(entry: entry, entryRep: er)
+                    } else if entry == nil {
+                        Entry(entryRep: er)
+                    }
+                }
+                self.saveToPersistentStore()
+                completion(nil)
+            } catch {
+                NSLog("Error decoding entry representation: \(error)")
+                completion(error)
+            }
+        }.resume()
     }
     
 }

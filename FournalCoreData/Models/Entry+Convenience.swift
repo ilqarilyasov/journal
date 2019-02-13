@@ -26,6 +26,7 @@ extension Entry {
         self.mood = mood.rawValue
     }
     
+    @discardableResult
     convenience init?(entryRep: EntryRepresentation) {
         
         self.init(title: entryRep.title, bodyText: entryRep.bodyText,
