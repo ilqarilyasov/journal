@@ -17,7 +17,11 @@ struct EntryRepresentation: Decodable, Equatable {
 }
 
 func ==(lhs: EntryRepresentation, rhs: Entry) -> Bool {
-    return lhs.identifier == rhs.identifier
+    return rhs.identifier == lhs.identifier &&
+        rhs.title == lhs.title &&
+        rhs.bodyText == lhs.bodyText &&
+        rhs.mood == lhs.mood.rawValue &&
+        rhs.timestamp == lhs.timestamp
 }
 
 func ==(lhs: Entry, rhs: EntryRepresentation) -> Bool {

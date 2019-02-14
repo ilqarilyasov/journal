@@ -67,19 +67,7 @@ class EntriesTableViewController: UITableViewController, NSFetchedResultsControl
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        var title = ""
-        switch section {
-        case 0:
-            title = Mood.a.rawValue
-        case 1:
-            title = Mood.b.rawValue
-        case 2:
-            title = Mood.c.rawValue
-        default:
-            break
-        }
-//        return fetchedResultsController.sections?[section].name
-        return title
+        return fetchedResultsController.sections?[section].name
     }
     
 
