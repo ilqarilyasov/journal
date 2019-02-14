@@ -17,14 +17,6 @@ class EntryTableViewCell: UITableViewCell {
     }
     
     
-    // MARK: - Helper
-    
-//    lazy var formatter: DateFormatter = {
-//        let formatter = DateFormatter()
-//        formatter.timeStyle = .short
-//        return formatter
-//    }()
-    
     // MARK: - Outlets
 
     @IBOutlet weak var titleTextLabel: UILabel!

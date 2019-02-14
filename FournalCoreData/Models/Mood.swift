@@ -9,7 +9,7 @@
 import Foundation
 
 enum Mood: String, CaseIterable, Equatable, Decodable {
-    case a = "😞"
+    case a = "😞" ///🧐🤪
     case b = "😐"
     case c = "😄"
 }
