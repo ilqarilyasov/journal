@@ -14,7 +14,7 @@ class CoreDataStack {
     private init() { }
     static let shared = CoreDataStack()
     
-    private lazy var container: NSPersistentContainer = {
+    lazy var container: NSPersistentContainer = {
         // Create a PersistentContainer
         let container = NSPersistentContainer(name: "FournalCoreData")
         
@@ -24,11 +24,16 @@ class CoreDataStack {
                 fatalError("Unresolved error: \(error), \(error.userInfo)")
             }
         }
+        container.viewContext.automaticallyMergesChangesFromParent = true
         return container
     }()
     
     // Also create a helper variable
     var mainContext: NSManagedObjectContext {
         return container.viewContext
+    }
+    
+    var backgroundContext: NSManagedObjectContext {
+        return container.newBackgroundContext()
     }
 }

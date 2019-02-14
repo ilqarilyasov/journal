@@ -17,12 +17,9 @@ class EntryController {
     
     // MARK: - Properties
     
-//    var entries: [Entry] {
-//        return loadFromPersistentStore()
-//    }
-    
     private let baseURL = URL(string: "https://journal-coredata-b5a96.firebaseio.com/")!
     let moc = CoreDataStack.shared.mainContext
+    let backgroundMoc = CoreDataStack.shared.backgroundContext
     
     // MARK: - Persistent Coordinator
     
@@ -35,18 +32,15 @@ class EntryController {
         }
     }
     
-//    func loadFromPersistentStore() -> [Entry] {
-//        let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest()
-//        let moc = CoreDataStack.shared.mainContext
-//
-//        do {
-//            let entries = try moc.fetch(fetchRequest)
-//            return entries
-//        } catch {
-//            NSLog("Error fetching from managed object context: \(error)")
-//            return []
-//        }
-//    }
+    func saveToBackgroundMoc() {
+        self.backgroundMoc.perform {
+            do {
+                try self.backgroundMoc.save()
+            } catch {
+                NSLog("Error saving background context: \(error)")
+            }
+        }
+    }
     
     
     // MARK: - CRUD methods
@@ -54,8 +48,8 @@ class EntryController {
     func createEntry(with title: String, bodyText: String, mood: Mood) {
         let entry = Entry(title: title, bodyText: bodyText, mood: mood)
         
-        saveToPersistentStore()
         putToServer(entry: entry)
+        saveToPersistentStore()
     }
     
     func update(entry: Entry, title: String, bodyText: String, mood: Mood) {
@@ -64,13 +58,12 @@ class EntryController {
         entry.mood = mood.rawValue
         entry.timestamp = Date()
         
-        saveToPersistentStore()
         putToServer(entry: entry)
+        saveToPersistentStore()
     }
     
     func delete(entry: Entry) {
         moc.delete(entry)
-        
         deleteFromServer(entry: entry)
         saveToPersistentStore()
     }
@@ -135,15 +128,32 @@ class EntryController {
         entry.mood = entryRep.mood.rawValue
     }
     
-    func fetchSingleEntryFromPersistentStore(identifier: String) -> Entry? {
+    func fetchSingleEntryFromPersistentStore(identifier: String, context: NSManagedObjectContext) -> Entry? {
         let fetchRequest: NSFetchRequest<Entry> = Entry.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "identifier == %@", identifier)
+        
+        var entry: Entry?
         do {
-            let entry = try moc.fetch(fetchRequest).first
-            return entry
+            entry = try context.fetch(fetchRequest).first
         } catch {
             NSLog("Error fetching single entry from Persistent Store")
-            return nil
+        }
+        return entry
+    }
+    
+    func updatePersistentStoreWithServer(_ entryRepresentations: [EntryRepresentation],
+                                         context: NSManagedObjectContext) {
+        context.performAndWait {
+            for er in entryRepresentations {
+                let entry = self.fetchSingleEntryFromPersistentStore(identifier: er.identifier,
+                                                                     context: context)
+                
+                if let entry = entry, entry != er {
+                    self.update(entry: entry, entryRep: er)
+                } else if entry == nil {
+                    Entry(entryRep: er, context: context)
+                }
+            }
         }
     }
     
@@ -168,21 +178,15 @@ class EntryController {
                 let entryRepDict = try decoder.decode([String: EntryRepresentation].self, from: data)
                 let entryRepresentations = entryRepDict.map{ $0.value }
                 
-                for er in entryRepresentations {
-                    let entry = self.fetchSingleEntryFromPersistentStore(identifier: er.identifier)
-                    
-                    if let entry = entry, entry != er {
-                        self.update(entry: entry, entryRep: er)
-                    } else if entry == nil {
-                        Entry(entryRep: er)
-                    }
-                }
-                self.saveToPersistentStore()
+                self.updatePersistentStoreWithServer(entryRepresentations, context: self.backgroundMoc)
+                self.saveToBackgroundMoc()
                 completion(nil)
             } catch {
                 NSLog("Error decoding entry representation: \(error)")
                 completion(error)
             }
+            
+            
         }.resume()
     }
     

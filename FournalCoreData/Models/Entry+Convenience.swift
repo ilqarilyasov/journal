@@ -27,11 +27,11 @@ extension Entry {
     }
     
     @discardableResult
-    convenience init?(entryRep: EntryRepresentation) {
+    convenience init?(entryRep: EntryRepresentation, context: NSManagedObjectContext) {
         
         self.init(title: entryRep.title, bodyText: entryRep.bodyText,
                   timestamp: entryRep.timestamp,
                   identifier: entryRep.identifier,
-                  mood: entryRep.mood)
+                  mood: entryRep.mood, context: context)
     }
 }
