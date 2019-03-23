@@ -10,6 +10,41 @@ import UIKit
 
 class EntryDetailViewController: UIViewController {
     
+    // State restoration
+    
+    override func encodeRestorableState(with coder: NSCoder) {
+        super.encodeRestorableState(with: coder)
+        coder.encode(entry, forKey: "Entry")
+        coder.encode(titleTextField.text, forKey: "titleTextField")
+        coder.encode(bodyTextTextView.text, forKey: "bodyTextTextView")
+        coder.encode(moodSegmentedControl.selectedSegmentIndex, forKey: "moodSegmentedControl")
+    }
+    
+    override func decodeRestorableState(with coder: NSCoder) {
+        super.decodeRestorableState(with: coder)
+        if let resoredEntry = coder.decodeObject(forKey: "Entry") as? Entry {
+            self.entry = resoredEntry
+        }
+        
+        if let title = coder.decodeObject(forKey: "titleTextField") as? String {
+            self.titleTextField.text = title
+        }
+        
+        if let body = coder.decodeObject(forKey: "bodyTextTextView") as? String {
+            self.bodyTextTextView.text = body
+        }
+        
+        if let index = coder.decodeObject(forKey: "moodSegmentedControl") as? Int {
+            self.moodSegmentedControl.selectedSegmentIndex = index
+        }
+    }
+    
+    override func applicationFinishedRestoringState() {
+        self.titleTextField.text = titleTextField.text
+        self.bodyTextTextView.text = bodyTextTextView.text
+        self.moodSegmentedControl.selectedSegmentIndex = moodSegmentedControl.selectedSegmentIndex
+    }
+    
     // MARK: - Properties
     
     var entryController: EntryController?

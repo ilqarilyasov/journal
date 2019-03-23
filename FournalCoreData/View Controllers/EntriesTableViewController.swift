@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 
 class EntriesTableViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+
     
     // MARK: - Properties
     

@@ -102,7 +102,7 @@ class EntryController {
             }
             
             completion(nil)
-        }.resume()
+            }.resume()
     }
     
     func deleteFromServer(entry: Entry, completion: @escaping (Error?) -> Void = { _ in }) {
